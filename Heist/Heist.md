@@ -46,7 +46,7 @@ port 445 microsoft-ds
 
 Redirected to login form
 Signin as guest
-
+![[Pasted image 20230207114930.png]]
 Attatchment
 ```
 version 12.2
@@ -158,7 +158,6 @@ Impacket v0.10.0 - Copyright 2022 SecureAuth Corporation
 1009: SUPPORTDESK\support (SidTypeUser)
 1012: SUPPORTDESK\Chase (SidTypeUser)
 1013: SUPPORTDESK\Jason (SidTypeUser)
-                                         
 ```
 
 ## SMBmap
