@@ -434,3 +434,15 @@ ssh again and get the flag
 
 ## joanna -> root
 
+```
+sudo -l
+Matching Defaults entries for joanna on openadmin:
+    env_keep+="LANG LANGUAGE LINGUAS LC_* _XKB_CHARSET", env_keep+="XAPPLRESDIR XFILESEARCHPATH
+    XUSERFILESEARCHPATH", secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin,
+    mail_badpass
+
+User joanna may run the following commands on openadmin:
+    (ALL) NOPASSWD: /bin/nano /opt/priv
+```
+
+run nano and execute some console commands to get into root?
