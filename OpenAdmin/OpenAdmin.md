@@ -445,4 +445,9 @@ User joanna may run the following commands on openadmin:
     (ALL) NOPASSWD: /bin/nano /opt/priv
 ```
 
-run nano and execute some console commands to get into root?
+The command below opens up nano as root
+```
+sudo /bin/nano /opt/priv
+```
+
+ctrl + R to open a file and we can simply choose root/root.txt for the flag
