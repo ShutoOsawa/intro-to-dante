@@ -24,7 +24,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 Nmap done: 1 IP address (1 host up) scanned in 77.64 seconds
 ```
 
-## Full Scan
+### Full Scan
 
 ```
 nmap -p- -Pn --min-rate 10000 nest.htb
@@ -39,7 +39,7 @@ PORT     STATE SERVICE
 Nmap done: 1 IP address (1 host up) scanned in 38.65 seconds
 ```
 
-## Port specific scan
+### Port specific scan
 ```
 nmap -p 445,4386 -Pn -sV -sC nest.htb
 Starting Nmap 7.93 ( https://nmap.org ) at 2023-02-09 09:26 EST
@@ -164,19 +164,6 @@ Current Directory: HQK
 ```
 setdir ..
 list
-[DIR]  ALL QUERIES
-[DIR]  LDAP
-[DIR]  Logs
-[1]   HqkSvc.exe
-[2]   HqkSvc.InstallState
-[3]   HQK_Config.xml
-
-Current Directory: HQK
-```
-
-```
-setdir ..
-list
 [DIR]  $Recycle.Bin
 [DIR]  Boot
 [DIR]  Documents and Settings
@@ -225,7 +212,7 @@ smbmap -H nest.htb -u null
         IPC$                                                    NO ACCESS       Remote IPC
         Secure$                                                 NO ACCESS
         Users                                                   READ ONLY
-                                                                                             
+                                                                                 
 ```
 
 ### smbclient for users
@@ -314,7 +301,14 @@ smbmap -H nest.htb -u TempUser -p welcome2019
 ```
 smbclient -U TempUser //nest.htb/Secure$  
 ```
-Access denied
+```
+smb: \> recurse on
+smb: \> prompt off
+smb: \> mget *
+NT_STATUS_ACCESS_DENIED listing \Finance\*
+NT_STATUS_ACCESS_DENIED listing \HR\*
+NT_STATUS_ACCESS_DENIED listing \IT\*
+```
 
 ## Check Users
 Nothing interesting
@@ -389,6 +383,7 @@ Trying cyberchef https://gchq.github.io/CyberChef/
 
 ## Carl
 ```
+smbclient -U TempUser //nest.htb/Secure$/IT/Carl
 smb: \IT\Carl\> recurse on
 smb: \IT\Carl\> prompt off
 smb: \IT\Carl\> mget *
